@@ -1,0 +1,26 @@
+# 生产环境配置
+server:
+  mode: release
+  port: 8080
+
+log:
+  level: info
+  format: json
+  output: file
+  file_path: /var/log/shopping-guide/app.log
+
+redis:
+  pool_size: 50
+  min_idle_conns: 20
+
+mysql:
+  max_idle_conns: 20
+  max_open_conns: 200
+
+middleware:
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+  auth:
+    enabled: true
+

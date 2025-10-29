@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=production
+      - REDIS_ADDR=redis:6379
+      - MYSQL_DSN=root:password@tcp(mysql:3306)/shopping_guide
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - shopping-guide-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - shopping-guide-network
+
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=shopping_guide
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../../scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shopping-guide-network
+
+volumes:
+  mysql_data:
+
+networks:
+  shopping-guide-network:
+    driver: bridge
+
